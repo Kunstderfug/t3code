@@ -4246,7 +4246,14 @@ const makeOrchestrator = Effect.fn("orchestrationV2.Orchestrator.layer")(functio
             }),
         ),
       );
-    // The source is unlocked; validate the modes copied here, not an earlier read.
+    if (sourceProjection.thread.deletedAt !== null) {
+      return yield* new OrchestratorDispatchError({
+        commandId: command.commandId,
+        commandType: command.type,
+        cause: `Thread ${command.sourceThreadId} is deleted.`,
+      });
+    }
+    // Source settings can change outside the deletion lock; validate the modes copied here.
     yield* refuseAboveDispatchModeLimit(command, command.sourceThreadId, sourceProjection.thread);
 
     const sourceRun = runForSourcePoint(sourceProjection, command.sourcePoint);
@@ -13293,7 +13300,7 @@ const makeOrchestrator = Effect.fn("orchestrationV2.Orchestrator.layer")(functio
   const dispatchWithReceipt = Effect.fnUntraced(function* (command: OrchestrationV2ServerCommand) {
     const dispatch = threadDispatch.withLock(
       commandThreadId(command),
-      command.type === "thread.delete"
+      command.type === "thread.delete" || command.type === "thread.fork"
         ? threadDispatch.withDeletionLock(dispatchWithReceiptEffect(command))
         : dispatchWithReceiptEffect(command),
     );
