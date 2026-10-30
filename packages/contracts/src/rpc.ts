@@ -225,6 +225,7 @@ import {
   OrchestrationV2ForceStopThreadError,
   OrchestrationV2DispatchCommandError,
   OrchestrationV2GetShellSnapshotError,
+  OrchestrationV2SuggestReplyError,
   OrchestrationV2CommandOutputError,
   OrchestrationV2GetThreadProjectionError,
   OrchestrationV2RpcSchemas,
@@ -1758,6 +1759,12 @@ const WsOrchestrationV2GetWorktreeThreadIdsRpc = Rpc.make(
   },
 );
 
+const WsOrchestrationV2SuggestReplyRpc = Rpc.make(ORCHESTRATION_V2_WS_METHODS.suggestReply, {
+  payload: OrchestrationV2RpcSchemas.suggestReply.input,
+  success: OrchestrationV2RpcSchemas.suggestReply.output,
+  error: Schema.Union([OrchestrationV2SuggestReplyError, EnvironmentAuthorizationError]),
+});
+
 const WsOrchestrationV2GetOlderSettledThreadsRpc = Rpc.make(
   ORCHESTRATION_V2_WS_METHODS.getOlderSettledThreads,
   {
@@ -2151,6 +2158,7 @@ export const WsRpcGroup = RpcGroup.make(
   WsOrchestrationV2GetArchivedShellSnapshotRpc,
   WsOrchestrationV2GetThreadFamilyRpc,
   WsOrchestrationV2GetWorktreeThreadIdsRpc,
+  WsOrchestrationV2SuggestReplyRpc,
   WsOrchestrationV2GetOlderSettledThreadsRpc,
   WsOrchestrationV2GetThreadProjectionRpc,
   WsOrchestrationV2LaunchThreadRpc,

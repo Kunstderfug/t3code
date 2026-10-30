@@ -3530,6 +3530,7 @@ export const ORCHESTRATION_V2_WS_METHODS = {
   getArchivedShellSnapshot: "orchestration.getArchivedShellSnapshot",
   getThreadFamily: "orchestration.getThreadFamily",
   getWorktreeThreadIds: "orchestration.getWorktreeThreadIds",
+  suggestReply: "orchestration.suggestReply",
   getOlderSettledThreads: "orchestration.getOlderSettledThreads",
   getThreadProjection: "orchestration.getThreadProjection",
   getWorkflowScript: "orchestration.getWorkflowScript",
@@ -3711,6 +3712,28 @@ export const OrchestrationV2OlderSettledThreadsPage = Schema.Struct({
 });
 export type OrchestrationV2OlderSettledThreadsPage =
   typeof OrchestrationV2OlderSettledThreadsPage.Type;
+
+/** The run whose outcome the suggested next message responds to. */
+export const OrchestrationV2SuggestReplyInput = Schema.Struct({
+  threadId: ThreadId,
+  runId: RunId,
+});
+export type OrchestrationV2SuggestReplyInput = typeof OrchestrationV2SuggestReplyInput.Type;
+
+/** Null when the run is not the thread's latest completed run, or no follow-up is useful. */
+export const OrchestrationV2SuggestReplyResult = Schema.Struct({
+  suggestion: Schema.NullOr(Schema.String),
+});
+export type OrchestrationV2SuggestReplyResult = typeof OrchestrationV2SuggestReplyResult.Type;
+
+export class OrchestrationV2SuggestReplyError extends Schema.TaggedError<OrchestrationV2SuggestReplyError>()(
+  "OrchestrationV2SuggestReplyError",
+  { cause: Schema.Defect() },
+) {
+  override get message(): string {
+    return "Could not suggest a reply.";
+  }
+}
 
 /** Active threads on a worktree path, including subagent children a shell may leave out. */
 export const OrchestrationV2WorktreeThreadIds = Schema.Struct({
@@ -4130,6 +4153,10 @@ export const OrchestrationV2RpcSchemas = {
   getWorktreeThreadIds: {
     input: OrchestrationV2GetWorktreeThreadIdsInput,
     output: OrchestrationV2WorktreeThreadIds,
+  },
+  suggestReply: {
+    input: OrchestrationV2SuggestReplyInput,
+    output: OrchestrationV2SuggestReplyResult,
   },
   getOlderSettledThreads: {
     input: OrchestrationV2GetOlderSettledThreadsInput,

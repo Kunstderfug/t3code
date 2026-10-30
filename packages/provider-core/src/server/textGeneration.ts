@@ -72,6 +72,18 @@ export interface ThreadTitleGenerationResult {
   needsRefinement?: boolean | undefined;
 }
 
+export interface ReplySuggestionGenerationInput {
+  cwd: string;
+  /** The conversation so far, oldest first, as formatted by formatThreadTitleContext. */
+  conversation: string;
+  modelSelection: ModelSelection;
+}
+
+export interface ReplySuggestionGenerationResult {
+  /** Empty when the model has no useful next message to offer. */
+  suggestion: string;
+}
+
 export interface ReviewGuideStackLayer {
   readonly number: number;
   readonly title: string | null;
@@ -113,6 +125,10 @@ export interface ProviderTextGeneration {
   readonly generateThreadTitle: (
     input: ThreadTitleGenerationInput,
   ) => Effect.Effect<ThreadTitleGenerationResult, TextGenerationError>;
+
+  readonly generateReplySuggestion: (
+    input: ReplySuggestionGenerationInput,
+  ) => Effect.Effect<ReplySuggestionGenerationResult, TextGenerationError>;
 
   readonly generateReviewGuide: (
     input: ReviewGuideGenerationInput,

@@ -144,6 +144,13 @@ export function createOrchestrationEnvironmentAtoms<R, E>(
       label: "environment-data:orchestration:archived-shell-snapshot",
       tag: ORCHESTRATION_V2_WS_METHODS.getArchivedShellSnapshot,
     }),
+    // One model call per completed run; the key never goes stale, so keep it while the thread is open.
+    replySuggestion: createEnvironmentRpcQueryAtomFamily(runtime, {
+      label: "environment-data:orchestration:reply-suggestion",
+      tag: ORCHESTRATION_V2_WS_METHODS.suggestReply,
+      staleTimeMs: Number.POSITIVE_INFINITY,
+      idleTtlMs: 600_000,
+    }),
     // Read right before deleting a worktree, so never served from cache.
     worktreeThreadIds: createEnvironmentRpcQueryAtomFamily(runtime, {
       label: "environment-data:orchestration:worktree-thread-ids",

@@ -52,6 +52,18 @@ export function sanitizePrTitle(raw: string): string {
   return "Update project changes";
 }
 
+const MAX_REPLY_SUGGESTION_CHARS = 200;
+
+export function sanitizeReplySuggestion(raw: string): string {
+  const normalized = (raw.trim().split(/\r?\n/g)[0] ?? "")
+    .trim()
+    .replace(/^['"`]+|['"`]+$/g, "")
+    .trim()
+    .replace(/\s+/g, " ");
+  if (normalized.length <= MAX_REPLY_SUGGESTION_CHARS) return normalized;
+  return `${normalized.slice(0, MAX_REPLY_SUGGESTION_CHARS - 3).trimEnd()}...`;
+}
+
 const MAX_THREAD_TITLE_CHARS = 120;
 
 export function sanitizeThreadTitle(raw: string): string {

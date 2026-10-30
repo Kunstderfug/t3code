@@ -107,6 +107,7 @@ import { ComposerStashMenu } from "./ComposerStashMenu";
 import { useComposerTriggerState } from "./useComposerTriggerState";
 import { useComposerMenuItems } from "./useComposerMenuItems";
 import { useComposerMultilinePrompt } from "./useComposerMultilinePrompt";
+import { useReplySuggestion } from "./useReplySuggestion";
 import {
   reconcileAttachmentContextReferences,
   useRetainedContextPayloads,
@@ -227,6 +228,7 @@ import { observeResize } from "~/lib/observeResize";
 
 const isEnvironmentRequestInvalidError = Schema.is(EnvironmentRequestInvalidError);
 import { toastManager } from "../ui/toast";
+import { Kbd } from "../ui/kbd";
 import { PlayIcon } from "lucide-react";
 import { proposedPlanTitle } from "@t3tools/shared/proposedPlanText";
 import { hasProviderSetup } from "./ProviderStatusBanner";
@@ -1156,6 +1158,24 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
   )
     ? "steer"
     : settings.followUpBehavior;
+  // Ghost text in the empty composer after a completed run; Tab accepts it.
+  const replySuggestionSlotFree =
+    !isComposerApprovalState &&
+    !activePendingProgress &&
+    !(showPlanFollowUpPrompt && activeProposedPlan) &&
+    !projectSelectionRequired &&
+    !showProviderUnavailable;
+  const replySuggestion = useReplySuggestion({
+    environmentId,
+    threadId: routeKind === "server" ? activeThreadId : null,
+    latestRun: activeThread?.latestRun,
+    wanted:
+      settings.composerReplySuggestionsEnabled &&
+      canOperateThread &&
+      phase !== "running" &&
+      prompt.length === 0 &&
+      replySuggestionSlotFree,
+  });
   const composerSuggestionsVisible = composerMenuOpen;
   const composerSuggestionListVisible = composerSuggestionsVisible && composerMenuItems.length > 0;
   const activePendingUserInput = pendingUserInputs[0] ?? null;
@@ -2192,6 +2212,7 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
       readComposerSnapshot,
       applyPromptReplacement,
       submitComposer,
+      replySuggestion,
     })(key, event, isTaskItem);
 
   const {
@@ -3355,7 +3376,20 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
                               ? "Choose a project above to start a thread"
                               : showProviderUnavailable
                                 ? "Enable a provider in Settings to send a message"
-                                : DEFAULT_COMPOSER_PLACEHOLDER
+                                : (replySuggestion ?? DEFAULT_COMPOSER_PLACEHOLDER)
+                    }
+                    // A suggestion reads quieter than the regular placeholder.
+                    placeholderClassName={
+                      replySuggestion !== null && replySuggestionSlotFree
+                        ? "text-placeholder/55"
+                        : ""
+                    }
+                    placeholderHint={
+                      replySuggestion !== null && replySuggestionSlotFree ? (
+                        <span className="ms-2 inline-flex align-middle">
+                          <Kbd>Tab</Kbd>
+                        </span>
+                      ) : null
                     }
                     disabled={
                       projectSelectionRequired ||

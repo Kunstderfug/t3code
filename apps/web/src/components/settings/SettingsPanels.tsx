@@ -506,6 +506,10 @@ export function useSettingsRestore(onRestored?: () => void) {
     ...(settings.composerRichTextEnabled !== DEFAULT_UNIFIED_SETTINGS.composerRichTextEnabled
       ? ["Rich text composer"]
       : []),
+    ...(settings.composerReplySuggestionsEnabled !==
+    DEFAULT_UNIFIED_SETTINGS.composerReplySuggestionsEnabled
+      ? ["Reply suggestions"]
+      : []),
     ...(settings.sendShortcut !== DEFAULT_UNIFIED_SETTINGS.sendShortcut ? ["Send shortcut"] : []),
     ...(settings.followUpBehavior !== DEFAULT_UNIFIED_SETTINGS.followUpBehavior
       ? ["Follow-up behavior"]
@@ -622,6 +626,7 @@ export function useSettingsRestore(onRestored?: () => void) {
       proactivePanelsEnabled: DEFAULT_UNIFIED_SETTINGS.proactivePanelsEnabled,
       showSkillsInSlashMenu: DEFAULT_UNIFIED_SETTINGS.showSkillsInSlashMenu,
       composerRichTextEnabled: DEFAULT_UNIFIED_SETTINGS.composerRichTextEnabled,
+      composerReplySuggestionsEnabled: DEFAULT_UNIFIED_SETTINGS.composerReplySuggestionsEnabled,
       sendShortcut: DEFAULT_UNIFIED_SETTINGS.sendShortcut,
       followUpBehavior: DEFAULT_UNIFIED_SETTINGS.followUpBehavior,
       contextWindowMeterEnabled: DEFAULT_UNIFIED_SETTINGS.contextWindowMeterEnabled,
@@ -1090,6 +1095,33 @@ export function ChatSettingsPanel() {
                 updateSettings({ composerRichTextEnabled: Boolean(checked) })
               }
               aria-label="Rich text composer"
+            />
+          }
+        />
+        <SettingsRow
+          {...searchableSetting("reply-suggestions")}
+          description="After a turn completes, suggest your next message in the empty composer. Press Tab to use it."
+          resetAction={
+            settings.composerReplySuggestionsEnabled !==
+            DEFAULT_UNIFIED_SETTINGS.composerReplySuggestionsEnabled ? (
+              <SettingResetButton
+                label="reply suggestions"
+                onClick={() =>
+                  updateSettings({
+                    composerReplySuggestionsEnabled:
+                      DEFAULT_UNIFIED_SETTINGS.composerReplySuggestionsEnabled,
+                  })
+                }
+              />
+            ) : null
+          }
+          control={
+            <Switch
+              checked={settings.composerReplySuggestionsEnabled}
+              onCheckedChange={(checked) =>
+                updateSettings({ composerReplySuggestionsEnabled: Boolean(checked) })
+              }
+              aria-label="Reply suggestions"
             />
           }
         />

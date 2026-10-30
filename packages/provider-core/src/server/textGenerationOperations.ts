@@ -10,12 +10,14 @@ import {
   buildBranchNamePrompt,
   buildCommitMessagePrompt,
   buildPrContentPrompt,
+  buildReplySuggestionPrompt,
   buildReviewGuidePrompt,
   buildThreadTitlePrompt,
 } from "./textGenerationPrompts.ts";
 import {
   sanitizeCommitSubject,
   sanitizePrTitle,
+  sanitizeReplySuggestion,
   sanitizeThreadTitle,
 } from "./textGenerationUtils.ts";
 
@@ -155,6 +157,18 @@ export function fromRunner(name: string, run: Runner): ProviderTextGeneration {
     };
   });
 
+  const generateReplySuggestion: ProviderTextGeneration["generateReplySuggestion"] = Effect.fn(
+    `${name}.generateReplySuggestion`,
+  )(function* (input) {
+    const generated = yield* run({
+      operation: "generateReplySuggestion",
+      cwd: input.cwd,
+      modelSelection: input.modelSelection,
+      ...buildReplySuggestionPrompt({ conversation: input.conversation }),
+    });
+    return { suggestion: sanitizeReplySuggestion(generated.suggestion) };
+  });
+
   const generateReviewGuide: ProviderTextGeneration["generateReviewGuide"] = Effect.fn(
     `${name}.generateReviewGuide`,
   )(function* (input) {
@@ -172,6 +186,7 @@ export function fromRunner(name: string, run: Runner): ProviderTextGeneration {
     generatePrContent,
     generateBranchName,
     generateThreadTitle,
+    generateReplySuggestion,
     generateReviewGuide,
   } satisfies ProviderTextGeneration;
 }

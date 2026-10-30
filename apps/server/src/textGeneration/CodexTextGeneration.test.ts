@@ -489,6 +489,7 @@ it.effect.each([false, true])("text generation preflight: exhausted=%s", (exhaus
           generateCommitMessage: () => Effect.die("unused"),
           generatePrContent: () => Effect.die("unused"),
           generateBranchName: () => Effect.die("unused"),
+          generateReplySuggestion: () => Effect.die("unused"),
           generateReviewGuide: () => Effect.die("unused"),
           generateThreadTitle: (input) =>
             Effect.sync(() => {

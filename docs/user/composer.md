@@ -146,6 +146,17 @@ the text is an unedited recalled prompt, with the caret on the first visual line
 the last visual line for `ArrowDown`, counting wrapped lines. Editing a recalled prompt turns it
 into a normal draft.
 
+## Reply suggestions
+
+On web and desktop, when the agent completes a turn, the empty composer suggests a short next
+message in place of its placeholder. Press **Tab** to put the suggestion in the composer, then edit
+or send it. Typing anything else ignores it. Suggestions appear only for turns that completed in
+the last hour. They are not offered after a failed or interrupted turn.
+
+Suggestions use the model chosen for text generation in your settings and read the latest
+exchange only. Turn them off in **Settings → Chat → Reply suggestions**. Mobile does not show
+suggestions.
+
 ## Edit an earlier prompt
 
 On web and desktop, choose **Edit from here** beneath a sent message to rewind

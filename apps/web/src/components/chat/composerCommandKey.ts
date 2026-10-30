@@ -79,6 +79,8 @@ export function composerCommandKeyHandler(input: {
     dispatchMode: ComposerDispatchMode,
     submissionIntent: ComposerSubmissionIntent,
   ) => void;
+  /** Ghost text shown in the empty composer; Tab makes it the prompt. */
+  readonly replySuggestion: string | null;
 }) {
   const {
     keybindings,
@@ -116,6 +118,7 @@ export function composerCommandKeyHandler(input: {
     readComposerSnapshot,
     applyPromptReplacement,
     submitComposer,
+    replySuggestion,
   } = input;
 
   // The composer persists across threads. A recall from thread A must not
@@ -211,6 +214,20 @@ export function composerCommandKeyHandler(input: {
         onSelectComposerItem(selectedItem);
         return true;
       }
+    }
+    if (
+      key === "Tab" &&
+      replySuggestion !== null &&
+      submissionIntent === null &&
+      !event.shiftKey &&
+      !event.altKey &&
+      !event.metaKey &&
+      !event.ctrlKey &&
+      !event.isComposing &&
+      promptRef.current.length === 0
+    ) {
+      replacePromptFromHistory(replySuggestion);
+      return true;
     }
     if ((key === "ArrowUp" || key === "ArrowDown") && submissionIntent === null) {
       return navigatePromptHistory(key === "ArrowUp" ? "backward" : "forward", event);

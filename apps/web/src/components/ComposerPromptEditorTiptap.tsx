@@ -156,6 +156,8 @@ export interface ComposerPromptEditorProps {
   skills: ReadonlyArray<ServerProviderSkill>;
   disabled: boolean;
   placeholder: string;
+  /** Shown after the placeholder text, such as the key that accepts a suggestion. */
+  placeholderHint?: React.ReactNode;
   ariaLabel?: string | undefined;
   suggestionListId?: string | undefined;
   activeSuggestionId?: string | undefined;
@@ -934,6 +936,7 @@ function ComposerPromptEditorTiptapInner(
     skills,
     disabled,
     placeholder,
+    placeholderHint,
     ariaLabel,
     suggestionListId,
     activeSuggestionId,
@@ -1821,6 +1824,7 @@ function ComposerPromptEditorTiptapInner(
                 )}
               >
                 {placeholder}
+                {placeholderHint}
               </div>
             ) : null}
           </div>
